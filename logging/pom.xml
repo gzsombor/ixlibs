@@ -14,7 +14,7 @@
             <plugin>
                 <groupId>org.eclipse.xtend</groupId>
                 <artifactId>xtend-maven-plugin</artifactId>
-                <version>${xtend.version}</version>
+                <version>${xtend.maven.version}</version>
                 <executions>
                     <execution>
                         <goals>
