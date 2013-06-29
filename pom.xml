@@ -12,6 +12,7 @@
   <modules>
       <module>logging</module>
       <module>properties</module>
+      <module>uniontypes</module>
   </modules>
   
     <repositories>
