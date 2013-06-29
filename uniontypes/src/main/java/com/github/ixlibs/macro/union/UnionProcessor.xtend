@@ -14,6 +14,7 @@ import org.eclipse.xtend.lib.macro.TransformationContext
 import org.eclipse.xtend.lib.macro.declaration.AnnotationReference
 import org.eclipse.xtend.lib.macro.declaration.ClassDeclaration
 import org.eclipse.xtend.lib.macro.declaration.MutableClassDeclaration
+import org.eclipse.xtend.lib.macro.declaration.MutableMethodDeclaration
 import org.eclipse.xtend.lib.macro.declaration.Type
 import org.eclipse.xtend.lib.macro.declaration.Visibility
 
@@ -27,13 +28,20 @@ annotation Union { // This is a string, until arrays could properly used
 @Data
 package class ClassInfo {
 	String typeName
+	String simpleTypeName
 	String innerClassName
 	String templateClassName
 
-	new(String typeName, String innerClassName, String templateClassName) {
+	new(String typeName, String simpleName, String qualifiedName) {
 		this._typeName = typeName
-		this._innerClassName = innerClassName
-		this._templateClassName = templateClassName
+		this._simpleTypeName = simpleName
+		this._innerClassName = qualifiedName + '$Wrapper' + simpleName
+		this._templateClassName = qualifiedName + '_' + simpleName
+	}
+
+	def getInnerClassSimpleName() {
+		innerClassName
+		// "Wrapper" + simpleTypeName
 	}
 }
 
@@ -66,9 +74,7 @@ class UnionProcessor extends AbstractClassProcessor {
 			stringTypeArray.fold(map,
 				[ tmpRes, stype |
 					val simpleName = simplifyName(stype)
-					tmpRes.add(
-						new ClassInfo(stype, clazz.qualifiedName + '$' + simpleName,
-							clazz.qualifiedName + '_' + simpleName))
+					tmpRes.add(new ClassInfo(stype, simpleName, clazz.qualifiedName))
 					tmpRes
 				])
 		}
@@ -78,9 +84,7 @@ class UnionProcessor extends AbstractClassProcessor {
 				if (value instanceof Type) {
 					val t = value as Type
 					val simpleName = t.simpleName
-					map.add(
-						new ClassInfo(t.simpleName, clazz.qualifiedName + '$' + simpleName,
-							clazz.qualifiedName + '_' + simpleName))
+					map.add(new ClassInfo(t.qualifiedName, t.simpleName, clazz.qualifiedName))
 				}
 			]
 		}
@@ -102,36 +106,26 @@ class UnionProcessor extends AbstractClassProcessor {
 
 		val annot = clazz.findAnnotation(findTypeGlobally(typeof(Union)))
 		val types = getInnerClasses(clazz, annot)
-//		if (false) {
-//			val X = annot?.getValue("types")
-//			if (X instanceof List) {
-//				val l = X as List
-//				addWarning(clazz,
-//					"List :" + l.size + " : " +
-//						l.map['(' + it.class.name + ' is ' + it.class.interfaces.map[ii|ii.toString].join + ')'].join)
-//			} else {
-//				addWarning(clazz, "Hello : " + types + " value:" + X.class)
-//			}
-//		}
 
-		//addWarning(clazz, "Processing " + clazz.qualifiedName + " to " + types)
-		types.forEach [
-			val wrappedClass = findTypeGlobally(typeName)?.newTypeReference
-			if (wrappedClass == null) {
-				addError(clazz, "Unable to locate " + typeName)
+		types.forEach [ ci |
+			val globalType = findTypeGlobally(ci.typeName)
+			if (globalType == null) {
+				addError(clazz, "Unable to locate " + ci.typeName)
 				return
 			}
-			val templateClass = findClass(templateClassName)
+			val wrappedClass = globalType.newTypeReference
+			val templateClass = findClass(ci.templateClassName)
 			if (templateClass != null) {
-				addWarning(templateClass, "Class used for generating " + innerClassName)
+				addWarning(templateClass, "Class used for generating " + ci.innerClassName)
 			}
-			val innerClass = findClass(innerClassName)
+			val innerClass = findClass(ci.innerClassName)
 			if (innerClass == null) {
-				addError(clazz, "Unable to locate innterclass:" + innerClassName)
+				addError(clazz, "Unable to locate innterclass:" + ci.innerClassName)
 				return
 			}
 			innerClass.setExtendedClass(clazzRef)
 			innerClass.abstract = false
+			innerClass.final = true
 			innerClass.addField("internal",
 				[
 					type = wrappedClass
@@ -142,39 +136,75 @@ class UnionProcessor extends AbstractClassProcessor {
 				addParameter("toBeWrapped", wrappedClass)
 				body = [''' this.internal = toBeWrapped; ''']
 			]
+			innerClass.addMethod("is" + globalType.simpleName,
+				[
+					returnType = primitiveBoolean
+					body = ["return true;"]
+				])
+			innerClass.addMethod("as" + globalType.simpleName,
+				[
+					returnType = wrappedClass
+					body = ["return this.internal;"]
+				])
+			// copy/implement/overwrite the parent method to the child
 			clazz.declaredMethods.forEach [ absMethod |
-				val origMethod = templateClass?.findMethod(absMethod.simpleName, absMethod.parameters.map[it.type])
-				if (absMethod.abstract || origMethod != null) {
-					innerClass.addMethod(absMethod.simpleName,
-						[ newMethod |
-							newMethod.returnType = absMethod.returnType
-							if (origMethod == null) {
-								absMethod.parameters.fold(0,
-									[ i, origParameter |
-										newMethod.addParameter("_" + i, origParameter.type)
-										i + 1
-									])
-								addWarning(innerClass,
-									"adding " + absMethod.simpleName + " to " + innerClass.qualifiedName)
-								val call = 'internal.' + absMethod.simpleName + '(' +
-									generateParameterList(absMethod.parameters.size) + ');'
-								if (newMethod.returnType.void) {
-									newMethod.body = [call]
-								} else {
-									newMethod.body = ["return " + call]
-								}
-							} else {
-								addWarning(innerClass,
-									"copying " + absMethod.simpleName + " to " + innerClass.qualifiedName + " from " +
-										templateClass.qualifiedName)
-								origMethod.parameters.forEach [ newMethod.addParameter(it.simpleName, it.type)]
-								newMethod.body = origMethod.body
-								origMethod.remove
-							}
-						])
-				}
+				convertMethod(absMethod, innerClass, templateClass, context)
 			]
+			// add methods for the main class
+			clazz.addMethod("from",
+				[
+					static = true
+					returnType = clazzRef
+					addParameter("original", wrappedClass)
+					body = [''' return new «ci.innerClassSimpleName»(original);''']
+				])
+			clazz.addMethod("is" + globalType.simpleName,
+				[
+					returnType = primitiveBoolean
+					body = ["return false;"]
+				])
+			clazz.addMethod("as" + globalType.simpleName,
+				[
+					returnType = wrappedClass
+					body = [
+						'''throw new ClassCastException("Unable to cast «this.class.name» to «globalType.simpleName»");''']
+				])
 		]
+
+	}
+
+	def private convertMethod(MutableMethodDeclaration absMethod, MutableClassDeclaration innerClass,
+		MutableClassDeclaration templateClass, extension TransformationContext context) {
+		val origMethod = templateClass?.findMethod(absMethod.simpleName, absMethod.parameters.map[it.type])
+		if (absMethod.abstract || origMethod != null) {
+			innerClass.addMethod(absMethod.simpleName,
+				[ newMethod |
+					newMethod.returnType = absMethod.returnType
+					if (origMethod == null) {
+						absMethod.parameters.fold(0,
+							[ i, origParameter |
+								newMethod.addParameter("_" + i, origParameter.type)
+								i + 1
+							])
+						addWarning(innerClass,
+							"adding " + absMethod.simpleName + " to " + innerClass.qualifiedName)
+						val call = 'internal.' + absMethod.simpleName + '(' +
+							generateParameterList(absMethod.parameters.size) + ');'
+						if (newMethod.returnType.void) {
+							newMethod.body = [call]
+						} else {
+							newMethod.body = ["return " + call]
+						}
+					} else {
+						addWarning(innerClass,
+							"copying " + absMethod.simpleName + " to " + innerClass.qualifiedName + " from " +
+								templateClass.qualifiedName)
+						origMethod.parameters.forEach[newMethod.addParameter(it.simpleName, it.type)]
+						newMethod.body = origMethod.body
+						origMethod.remove
+					}
+				])
+		}
 	}
 
 	def generateParameterList(int len) {
