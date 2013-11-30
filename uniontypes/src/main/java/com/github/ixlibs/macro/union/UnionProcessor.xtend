@@ -175,7 +175,7 @@ class UnionProcessor extends AbstractClassProcessor {
 
 	def private convertMethod(MutableMethodDeclaration absMethod, MutableClassDeclaration innerClass,
 		MutableClassDeclaration templateClass, extension TransformationContext context) {
-		val origMethod = templateClass?.findMethod(absMethod.simpleName, absMethod.parameters.map[it.type])
+		val origMethod = templateClass?.findDeclaredMethod(absMethod.simpleName, absMethod.parameters.map[it.type])
 		if (absMethod.abstract || origMethod != null) {
 			innerClass.addMethod(absMethod.simpleName,
 				[ newMethod |
