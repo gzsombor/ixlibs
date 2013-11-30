@@ -221,11 +221,7 @@ class ElasticStorableProcessor implements RegisterGlobalsParticipant<ClassDeclar
 		} else if (ft.array && simpleType(ft.arrayComponentType)) {
 			'''
 				if («name»!=null) {
-				  builder.array("«keyName»");
-				  for (int i=0;i<«name».length;i++) {
-					builder.value(«name»[i]);
-				 }
-				 builder.endArray();
+				  builder.array("«keyName»",«name»);
 				}
 			'''
 		} else if (iterableTypeReference.isAssignableFrom(ft)) {
