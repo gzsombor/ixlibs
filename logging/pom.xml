@@ -3,7 +3,7 @@
     <parent>
         <groupId>com.github.ixlibs</groupId>
         <artifactId>IxlibsMain</artifactId>
-        <version>0.5</version>
+        <version>0.6-SNAPSHOT</version>
     </parent>
   <name>Logging Annotations</name>
   <artifactId>logging</artifactId>
