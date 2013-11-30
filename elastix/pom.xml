@@ -1,0 +1,45 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.github.ixlibs</groupId>
+        <artifactId>IxlibsMain</artifactId>
+        <version>0.6-SNAPSHOT</version>
+    </parent>
+  <name>ElasticSearch Annotations</name>
+  <artifactId>elastix</artifactId>
+  
+  <description>Xtend Active Annotation which helps using ElasticSearch</description>
+  
+  <properties>
+    <es.version>0.90.7</es.version>
+  </properties>
+
+  <dependencies>
+    <dependency>                                                                                                                               
+      <groupId>org.elasticsearch</groupId>
+      <artifactId>elasticsearch</artifactId>
+      <version>${es.version}</version>
+    </dependency>
+  </dependencies>
+ 
+  <build>
+        <plugins>
+            <plugin>
+                <groupId>org.eclipse.xtend</groupId>
+                <artifactId>xtend-maven-plugin</artifactId>
+                <version>${xtend.maven.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                            <goal>xtend-install-debug-info</goal>
+                            <goal>xtend-test-install-debug-info</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+  
+</project>

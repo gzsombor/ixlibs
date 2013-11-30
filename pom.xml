@@ -13,6 +13,7 @@
       <module>logging</module>
       <module>properties</module>
       <module>uniontypes</module>
+      <module>elastix</module>
   </modules>
   
     <repositories>
