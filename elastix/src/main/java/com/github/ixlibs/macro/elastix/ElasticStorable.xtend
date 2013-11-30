@@ -350,9 +350,11 @@ class ElasticStorableProcessor implements RegisterGlobalsParticipant<ClassDeclar
 
 	val fixTypeMapping = #{"java.util.List" -> "java.util.ArrayList", "java.util.Set" -> "java.util.HashSet", "java.util.Collection" ->
 		"java.util.HashSet"}
-		
+
+	val packageName = typeof(Util).package.name
+	
 	def getConvertMethodName(TypeReference type) {
-		"org.eclipse.xtend.lib.elasticsearch.Util.to" + type.simpleName
+		packageName + ".Util.to" + type.simpleName
 	}
 
 }
