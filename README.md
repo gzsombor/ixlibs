@@ -99,3 +99,44 @@ will create:
         return this;
     }
 
+
+elastix
+==================
+
+This module provides ElasticSearch related annotations (http://www.elasticsearch.org/), just add @ElasticStorable annotation to the class, for example:
+
+    import com.github.ixlibs.macro.elastix.ElasticStorable
+    import com.github.ixlibs.macro.elastix.Id
+    import java.util.Date
+    
+    @ElasticStorable
+    class Product {
+	    @Id @Property String id
+	
+	    @Property String name
+	    @Property Long price
+	
+    	@Property Date created
+	    @Property Date lastModified
+	
+	    @Property String[] tags
+    }
+
+this will add the interface ElasticSearchObjectModel, and provides the necessary methods for the implementations. 
+To index an objet with ElasticSearch :
+
+    org.elasticsearch.client.Client client = ...;
+    val indexRequestBuilder = client.prepareIndex
+    product.serialize(indexRequestBuilder)
+    val IndexResponse response = indexRequestBuilder.get
+    
+To load back :
+
+    val searchBuilder = client.prepareSearch("mydatabase").setTypes(Product::ElasticType)
+    searchBuilder.setQuery(matchQuery("name", "someProductName"));
+    val response = searchBuilder.get
+    
+    val Iterable<Product> producs = response.hits.map(Product::BUILDER)
+    
+
+
