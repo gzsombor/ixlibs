@@ -1,5 +1,6 @@
 package com.github.ixlibs.macro.elastix.tests
 
+import com.github.ixlibs.macro.elastix.ElasticSearchObjectModel
 import java.util.ArrayList
 import java.util.Date
 import org.elasticsearch.action.index.IndexRequest
@@ -42,5 +43,12 @@ class ElasticStorableProcessorTest {
 		Assert.assertNotNull(Product::ElasticType)
 		Assert.assertNotNull(Product::BUILDER)
 	}
+	
+	@Test def void hasElasticSearchObjectModelInterface() {
+		val p = new Product
+		val ElasticSearchObjectModel es = p as ElasticSearchObjectModel
+		Assert.assertNotNull(es)
+	} 
+	
 
 }
