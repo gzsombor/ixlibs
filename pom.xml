@@ -15,6 +15,7 @@
       <module>uniontypes</module>
       <module>elastix</module>
       <module>internal-tests</module>
+      <module>aopx</module>
   </modules>
   
     <repositories>
