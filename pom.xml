@@ -17,32 +17,11 @@
       <module>internal-tests</module>
       <module>aopx</module>
   </modules>
-  
-    <repositories>
-        <repository>
-            <id>OSS Sonatype</id>
-            <url>https://oss.sonatype.org/content/groups/public/</url>
-        </repository>
-	<repository>
-	  <id>Xtend repo</id>
-	  <url>http://build.eclipse.org/common/xtend/maven/</url>
-	</repository>
-    </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>OSS Sonatype</id>
-            <url>https://oss.sonatype.org/content/groups/public/</url>
-        </pluginRepository>
-	<pluginRepository>
-	  <id>Xtend repo</id>
-	  <url>http://build.eclipse.org/common/xtend/maven/</url>
-	</pluginRepository>
-    </pluginRepositories>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <xtend.version>2.4.3</xtend.version>
-        <xtend.maven.version>2.4.3</xtend.maven.version>
+        <xtend.version>2.5.0</xtend.version>
+        <xtend.maven.version>2.5.0</xtend.maven.version>
         <guava.version>13.0</guava.version>
         <junit.version>4.10</junit.version>
         <java.version>1.6</java.version>
@@ -51,7 +30,7 @@
     
     <build>
         <plugins>
-            <!-- <plugin>
+             <plugin>
                 <groupId>org.eclipse.xtend</groupId>
                 <artifactId>xtend-maven-plugin</artifactId>
                 <version>${xtend.version}</version>
@@ -65,7 +44,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin> -->
+            </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.0</version>
