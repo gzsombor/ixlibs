@@ -1,7 +1,6 @@
 package com.github.ixlibs.macro.aopx
 
 import java.util.Collections
-import java.util.List
 import org.eclipse.xtend.lib.macro.declaration.MutableClassDeclaration
 import org.eclipse.xtend.lib.macro.declaration.MutableMethodDeclaration
 import org.eclipse.xtend.lib.macro.declaration.MutableParameterDeclaration
@@ -21,7 +20,7 @@ class JPATransactionTransformer extends NopMethodTransformer {
 		entityManagerType = findTypeGlobally("javax.persistence.EntityManager")
 	}
 	
-	override transformParameters(List<MutableParameterDeclaration> parameters) {
+	override transformParameters(Iterable<? extends MutableParameterDeclaration> parameters) {
 		Collections.singletonList("manager" -> entityManagerType.newTypeReference) + super.transformParameters(parameters)
 	}
 

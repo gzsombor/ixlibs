@@ -29,7 +29,7 @@ class ValidatingMethodTransformer extends MethodTransformer {
 		method.body = ['''
 			«FOR param : originalDeclaration.parameters»
 				«IF isNotNull(param)»
-			assert «param.simpleName» != null : "«param.simpleName» is null!";				
+				assert «param.simpleName» != null : "«param.simpleName» is null!";				
 				«ENDIF»			
 			«ENDFOR»
 			«methodCallAndReturn(destMethod, destMethod.simpleName)»

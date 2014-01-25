@@ -244,7 +244,7 @@ class ElasticStorableProcessor implements RegisterGlobalsParticipant<ClassDeclar
 					  	«IF (key == null)»
 						«serializeField(colType, "obj", context, null)»
 						«ELSE»
-						builder.value(obj.«key»);
+					  	builder.value(obj.«key»);
 						«ENDIF»
 					  }
 					  builder.endArray();

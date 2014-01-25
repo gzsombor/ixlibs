@@ -1,8 +1,8 @@
 package com.github.ixlibs.macro.aopx
 
-import com.google.common.collect.ImmutableList
 import java.lang.annotation.ElementType
 import java.lang.annotation.Target
+import java.util.Arrays
 import java.util.Collections
 import java.util.HashMap
 import java.util.List
@@ -57,8 +57,10 @@ class CompilerContext {
 		val value = annotValue?.getValue("types")
 		if (value instanceof String) {
 			Collections.singletonList(value as String)
-		} else if (value instanceof ImmutableList) {
-			return value as ImmutableList<String>
+		} else if (value instanceof String[]) {
+			return Arrays.asList(value as String[])
+		} else {
+			throw new RuntimeException("Unexpected '"+value +"' type:"+value?.class)
 		}
 	}
 
@@ -67,7 +69,7 @@ class CompilerContext {
 	}
 	
 	def getTransformers() {
-		getAspectTypes(classDeclaration)?.reverseView.map[getAspectImplementation(it)]?.filter[ it != null]
+		getAspectTypes(classDeclaration)?.reverseView?.map[getAspectImplementation(it)]?.filter[ it != null]
 	}
 	
 	def getMethods() {

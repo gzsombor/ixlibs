@@ -1,6 +1,5 @@
 package com.github.ixlibs.macro.aopx
 
-import java.util.List
 import org.eclipse.xtend.lib.macro.TransformationContext
 import org.eclipse.xtend.lib.macro.declaration.MutableClassDeclaration
 import org.eclipse.xtend.lib.macro.declaration.MutableMethodDeclaration
@@ -23,7 +22,7 @@ abstract class MethodTransformer {
 		
 	}
 	
-	def Iterable<Pair<String, TypeReference>> transformParameters(List<MutableParameterDeclaration> parameters) {
+	def Iterable<Pair<String, TypeReference>> transformParameters(Iterable<? extends MutableParameterDeclaration> parameters) {
 		parameters.map[it.simpleName -> it.type]
 	}
 	
