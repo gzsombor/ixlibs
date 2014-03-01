@@ -3,7 +3,7 @@ package com.github.ixlibs.macro.elastix.tests
 import com.github.ixlibs.macro.elastix.ElasticSearchObjectModel
 import java.util.ArrayList
 import java.util.Date
-import org.elasticsearch.action.index.IndexRequest
+import java.util.HashMap
 import org.elasticsearch.action.index.IndexRequestBuilder
 import org.junit.Assert
 import org.junit.Test
@@ -16,7 +16,11 @@ class ElasticStorableProcessorTest {
 		p.description = "ProductDescription"
 		p.created = new Date(1000)
 		p.tags = #{"big", "elastic"}
+		p.dynamicValues = new HashMap()
+		p.dynamicValues.put("hello", "world")
+		p.dynamicValues.put("name", "johnDoe")
 
+		println("Product is " +p)
 		val b = new IndexRequestBuilder(null)
 		p.serialize(b)
 
@@ -35,7 +39,9 @@ class ElasticStorableProcessorTest {
 
 		Assert.assertEquals("tags", new ArrayList(#{"big", "elastic"}), map.get("tags"))
 
-		println("source: " + map)
+		Assert.assertTrue("has dynamicValues", map.containsKey("dynamicValues"))
+		
+		println("source: " + map+" dynamicValues is "+map.get("dynamicValues"))
 	}
 
 

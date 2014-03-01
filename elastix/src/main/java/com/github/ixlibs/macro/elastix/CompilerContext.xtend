@@ -32,6 +32,8 @@ class CompilerContext {
 	protected val Type idAnnotationType
 
 	protected val TypeReference dateTypeReference
+	
+	protected val TypeReference mapTypeReference
 
 	protected val Type elasticStorableType
 
@@ -53,6 +55,7 @@ class CompilerContext {
 		searchHitType = findTypeGlobally("org.elasticsearch.search.SearchHit")
 		transientType = findTypeGlobally(typeof(Transient))
 		dateTypeReference = newTypeReference(typeof(Date))
+		mapTypeReference = newTypeReference(typeof(Map))
 		elasticStorableType = findTypeGlobally(typeof(ElasticStorable))
 		iterableTypeReference = wrapWithWildcard(typeof(Iterable))
 		storeFieldType = findTypeGlobally(typeof(Store))

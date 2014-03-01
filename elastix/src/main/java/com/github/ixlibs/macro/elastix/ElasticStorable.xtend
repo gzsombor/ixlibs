@@ -259,7 +259,20 @@ class ElasticStorableProcessor implements RegisterGlobalsParticipant<ClassDeclar
 				  builder.endObject();
 				}
 			'''
-
+		} else if (mapTypeReference.isAssignableFrom(ft)) {
+			'''
+			    if («name»!=null) {
+			      builder.startObject("«keyName»");
+			      for (Map.Entry entry : «name».entrySet()) {
+			        if (entry.getValue() != null) {
+			      	  builder.field(String.valueOf(entry.getKey())).value(entry.getValue());
+			        } else {
+			      	  builder.field(String.valueOf(entry.getKey())).nullValue();
+			      	}
+			      } 
+			      builder.endObject();
+			    }
+			'''
 		} else {
 			"// field type is " + ft + ", " + ft.type
 		}
