@@ -86,8 +86,7 @@ class CompilerContext {
 			} else {
 				val md = findTypeGlobally(qn)
 				if (md instanceof ClassDeclaration) {
-					val cd = md as ClassDeclaration
-					if (cd.findAnnotation(elasticStorableType) != null) {
+					if (md.findAnnotation(elasticStorableType) != null) {
 						elasticType.add(qn)
 						true
 					} else {

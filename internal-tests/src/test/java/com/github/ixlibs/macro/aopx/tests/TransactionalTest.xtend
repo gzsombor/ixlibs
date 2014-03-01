@@ -8,7 +8,7 @@ class TransactionalTest {
 	
 	EntityManagerFactory fact;	
 	
-	def doSomethingInTransact(String name, int value) {
-		System.out.println("Hello "+name+" : "+value + " the manager is " /* + manager.toString*/)
+	def void doSomethingInTransact(String name, int value) {
+		System.out.println("Hello "+name+" : "+value + " the manager is "  /* + manager.toString*/)
 	} 
 }

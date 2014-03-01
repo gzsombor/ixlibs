@@ -124,13 +124,13 @@ class LoggingProcessor extends AbstractClassProcessor {
 		if (value != null) {
 			val LoggingType type = if (value instanceof String) {
 				try {
-					LoggingType::valueOf(value as String)
+					LoggingType::valueOf(value)
 				} catch (IllegalArgumentException e) {
 					addError(clazz, "Valid arguments : " +LoggingType::values.toList)
 					null
 				}
 			} else if (value instanceof LoggingType) {
-				value as LoggingType
+				value
 			} else { 
 				null 
 			}

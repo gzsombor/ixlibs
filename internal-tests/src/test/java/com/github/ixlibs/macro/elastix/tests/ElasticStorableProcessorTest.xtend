@@ -20,7 +20,7 @@ class ElasticStorableProcessorTest {
 		val b = new IndexRequestBuilder(null)
 		p.serialize(b)
 
-		val request = b.request as IndexRequest
+		val request = b.request 
 		Assert.assertEquals("myId", request.id)
 		Assert.assertEquals(Product::ElasticType, request.type)
 		val map = request.sourceAsMap

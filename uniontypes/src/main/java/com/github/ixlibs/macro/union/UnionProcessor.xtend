@@ -70,7 +70,7 @@ class UnionProcessor extends AbstractClassProcessor {
 		val map = new ArrayList<ClassInfo>()
 		val types = annot?.getValue("types")
 		if (types instanceof String) {
-			val stringTypeArray = (types as String).split("[ ,;]").filter[!it.trim.empty]
+			val stringTypeArray = types.split("[ ,;]").filter[!it.trim.empty]
 			stringTypeArray.fold(map,
 				[ tmpRes, stype |
 					val simpleName = simplifyName(stype)
@@ -79,12 +79,9 @@ class UnionProcessor extends AbstractClassProcessor {
 				])
 		}
 		if (types instanceof List<?>) {
-			val list = (types as List<?>)
-			list.forEach [ value |
+			types.forEach [ value |
 				if (value instanceof Type) {
-					val t = value as Type
-					val simpleName = t.simpleName
-					map.add(new ClassInfo(t.qualifiedName, t.simpleName, clazz.qualifiedName))
+					map.add(new ClassInfo(value.qualifiedName, value.simpleName, clazz.qualifiedName))
 				}
 			]
 		}

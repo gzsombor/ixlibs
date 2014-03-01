@@ -56,9 +56,9 @@ class CompilerContext {
 		val annotValue = decl.findAnnotation(aspectType)
 		val value = annotValue?.getValue("types")
 		if (value instanceof String) {
-			Collections.singletonList(value as String)
+			Collections.singletonList(value)
 		} else if (value instanceof String[]) {
-			return Arrays.asList(value as String[])
+			return Arrays.asList(value)
 		} else {
 			throw new RuntimeException("Unexpected '"+value +"' type:"+value?.class)
 		}
@@ -75,6 +75,11 @@ class CompilerContext {
 	def getMethods() {
 		classDeclaration.declaredMethods
 	}
+	
+	def addWarning(String msg){
+		transformation.addWarning(classDeclaration, msg)
+	} 
+	
 }
 
 class NopMethodTransformer extends MethodTransformer {
@@ -156,10 +161,10 @@ class AspectProcessor implements RegisterGlobalsParticipant<ClassDeclaration>, T
 			for (param : firstTransformer.transformParameters(method.parameters)) {
 				addParameter(param.key, param.value)
 			}
-			returnType = method.returnType
 			if (copy) {
 				body = method.body
 			}
+			returnType = method.returnType
 		])
 	}
 	
